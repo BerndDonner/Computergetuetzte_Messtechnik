@@ -1,7 +1,7 @@
 #include <CapacitiveSensor.h> 
 
 CapacitiveSensor Sensor = CapacitiveSensor(4, 6); /* sendpin 3; receivepin 5 */
-int ledPinBlue = 9; /* LED auf Pin 2 */
+int ledPinBlue = 13; /* LED auf Pin 2 */
 
 
 
