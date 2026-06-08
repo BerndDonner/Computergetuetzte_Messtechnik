@@ -1,37 +1,58 @@
 #include <CapacitiveSensor.h>
-CapacitiveSensor Sensor = CapacitiveSensor(4, 6);
-int32_t val;
-uint8_t led = 13;
-bool blink = false;
-uint32_t starttime;
+
+constexpr uint8_t SEND_PIN = 4;
+constexpr uint8_t RECEIVE_PIN = 6;
+constexpr uint8_t LED_PIN = 13;
+
+constexpr int32_t SCHWELLWERT = 1000;
+constexpr uint32_t BLINK_INTERVAL_MS = 1000;
+
+CapacitiveSensor sensor(SEND_PIN, RECEIVE_PIN);
+
+bool blinkAktiv = false;
+uint32_t letzteBlinkZeit = 0;
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(led, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop()
 {
-  val = 2000;
-//  val = Sensor.capacitiveSensor(30);
-  Serial.println(val);
-  
-  if (val >= 1000) {
-    uint32_t time = millis();
-    if (blink == false) starttime = time;
-    if (millis() - starttime > 1000)
-    {
-      digitalWrite(led, !digitalRead(13));
-      starttime = time;
-    }
-    blink = true;
-  }
+  int32_t messwert = sensor.capacitiveSensor(30);
 
-  else if (val < 1000) {
-    blink = false;
-    digitalWrite(led, LOW);   
+  Serial.println(messwert);
+
+  if (messwert >= SCHWELLWERT) {
+    blinkeLed();
+  } else {
+    schalteLedAus();
   }
 
   delay(10);
 }
+
+void blinkeLed()
+{
+  uint32_t aktuelleZeit = millis();
+
+  if (!blinkAktiv) {
+    letzteBlinkZeit = aktuelleZeit;
+    blinkAktiv = true;
+  }
+
+  if (aktuelleZeit - letzteBlinkZeit >= BLINK_INTERVAL_MS) {
+    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    letzteBlinkZeit = aktuelleZeit;
+  }
+}
+
+void schalteLedAus()
+{
+  blinkAktiv = false;
+  digitalWrite(LED_PIN, LOW);
+}
+
+
+
