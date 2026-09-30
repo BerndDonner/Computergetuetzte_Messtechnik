@@ -5,10 +5,6 @@ CapacitiveSensor Sensor = CapacitiveSensor(4, 6);
 const int ledPin = 12;
 const long thresholdOn = 1000;
 const long thresholdOff = 800;
-const unsigned long blinkInterval = 500;
-
-bool touched = false;
-unsigned long lastBlink = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -20,20 +16,12 @@ void loop() {
   long val = Sensor.capacitiveSensor(30);
   Serial.println(val);
 
-  // Berührung mit Hysterese erkennen
+  // LED mit Hysterese schalten
   if (val >= thresholdOn) {
-    touched = true;
+    digitalWrite(ledPin, HIGH);
   } else if (val <= thresholdOff) {
-    touched = false;
-  }
-
-  // Bei Berührung LED blinken lassen
-  if (touched) {
-    if (millis() - lastBlink >= blinkInterval) {
-      digitalWrite(ledPin, !digitalRead(ledPin));
-      lastBlink = millis();
-    }
-  } else {
     digitalWrite(ledPin, LOW);
   }
+
+  delay(10);
 }

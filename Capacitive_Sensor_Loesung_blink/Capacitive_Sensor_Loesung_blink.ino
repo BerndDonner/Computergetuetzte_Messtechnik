@@ -1,31 +1,36 @@
 #include <CapacitiveSensor.h>
-CapacitiveSensor Sensor = CapacitiveSensor(4, 6);
-long val;
-bool led_status = false;
-#define led 13
 
-void setup()
-{
+CapacitiveSensor Sensor = CapacitiveSensor(4, 6);
+
+const int ledPin = 12;
+const long thresholdOn = 1000;
+const long thresholdOff = 800;
+
+bool touched = false;
+
+void setup() {
   Serial.begin(9600);
-  pinMode(led, OUTPUT);
+  pinMode(ledPin, OUTPUT);
 }
 
-void loop()
-{
-  val = Sensor.capacitiveSensor(30);
+void loop() {
+  // Messwert des kapazitiven Sensors einlesen
+  long val = Sensor.capacitiveSensor(30);
   Serial.println(val);
-  
-  if (val >= 1000) {
-    led_status = !led_status;
-    
-    digitalWrite(led, led_status);
-    delay(1000);
+
+  // Berührung mit Hysterese erkennen
+  if (val >= thresholdOn) {
+    touched = true;
+  } else if (val <= thresholdOff) {
+    touched = false;
   }
 
-  else if (val < 1000) {
-    led_status = false;
-    digitalWrite(led, led_status);   
+  // Bei Berührung LED blinken lassen
+  if (touched) {
+    digitalWrite(ledPin, !digitalRead(ledPin));
+    delay(500);
+  } else {
+    digitalWrite(ledPin, LOW);
+    delay(10);
   }
-
-  delay(10);
 }

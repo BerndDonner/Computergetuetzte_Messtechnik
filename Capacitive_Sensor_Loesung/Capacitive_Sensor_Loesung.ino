@@ -1,28 +1,26 @@
-#include <CapacitiveSensor.h> 
+#include <CapacitiveSensor.h>
 
-CapacitiveSensor Sensor = CapacitiveSensor(4, 6); /* sendpin 3; receivepin 5 */
-int ledPinBlue = 13; /* LED auf Pin 2 */
+CapacitiveSensor Sensor = CapacitiveSensor(4, 6);
 
+const int ledPin = 12;
+const long threshold = 1000;
 
-
-void setup() 
-{
+void setup() {
   Serial.begin(9600);
-  pinMode(ledPinBlue, OUTPUT);
-} 
- 
-void loop() 
-{ 
-  /* Nur duch Berührung mit einem Metallstift soll im folgenden eine blaue LED eingeschaltet werden */
-  long val = Sensor.capacitiveSensor(30);
+  pinMode(ledPin, OUTPUT);
+}
 
-  if (val < 1000)
-  {
-    digitalWrite(ledPinBlue, LOW);   // sets the LED off
-  } else if (val >= 1000)
-  {
-    digitalWrite(ledPinBlue, HIGH);   // sets the LED on
+void loop() {
+  // Messwert des kapazitiven Sensors einlesen
+  long val = Sensor.capacitiveSensor(30);
+  Serial.println(val);
+
+  // LED bei Berührung einschalten
+  if (val >= threshold) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
   }
-  
-  delay(10); 
+
+  delay(10);
 }
